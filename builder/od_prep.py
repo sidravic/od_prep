@@ -24,6 +24,7 @@ class OdPrep():
         self.image_builder()
         self.categories_builder(annotated=self.annotator.annots)
         self.build_annotations(self.annotator.annots)
+        self.build_images(self.annotator.annots)
         self.build_categories(self.annotator.annots)
         return self.all_data
 
@@ -71,7 +72,8 @@ class OdPrep():
                     'id': image_id
                 }
                 
-            if _image not in all_images: all_images.append(_image)        
+                if _image not in all_images: all_images.append(_image)                            
+                    
         self.all_images = all_images
         return self.all_images
 
