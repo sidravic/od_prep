@@ -25,17 +25,21 @@ class Annotate():
         d = self.annotation_details
         annot_objects = d['annotation']['object']
         annot_objects = annot_objects if isinstance(annot_objects, list) else [annot_objects]
-
-        annotated = []
-        for o in annot_objects:
-            height, width, area = self._get_hw_area(d['annotation']['size'])
-            filename = d['annotation']['filename']
-            path = d['annotation']['path']
-            category = o['name']
-            bbox = self._get_bbox(o['bndbox'])
-            annotated.append(self._prepare_annotation(height, width, area, 
-                                                     filename, path, self.xml_file, category, 
-                                                     bbox))
+        
+        height, width, area = self._get_hw_area(d['annotation']['size'])        
+        filename = d['annotation']['filename']
+        path = d['annotation']['path']
+        category = []
+        bbox = []
+        annotated = None
+        
+        for o in annot_objects:                   
+            category.append(o['name'])
+            bbox.append(self._get_bbox(o['bndbox']))
+            
+        annotated = self._prepare_annotation(height, width, area, 
+                                 filename, path, self.xml_file, category, 
+                                 bbox)
         return annotated
         
     def _get_hw_area(self, size):

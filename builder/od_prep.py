@@ -31,26 +31,26 @@ class OdPrep():
 
     def build_annotations(self, annots):
         all_annotations = []
-        for anno in annots:
-            for a in anno:
-                old_name = f'{a["folder"]}/{a["filename"]}'
-                new_name = self.image_builder.new_for_old(old_name)
-                image_id = self.image_builder.id_for_name(new_name)
-                id = image_id
-
-                _ann = {
-                    'segmentation': [[]],
-                    'area': (a['height'] * a['width']),
-                    'iscrowd': 0,
-                    'image_id': image_id,
-                    'bbox': list(map(int, a['bbox'])),
-                    'category_id': self.categories_builder.categories(invert=True)[a['category']],
-                    'id': id,
-                    'ignore': 0 }
+        for a in annots:
+                      
+            old_name = f'{a["folder"]}/{a["filename"]}'
+            new_name = self.image_builder.new_for_old(old_name)
+            image_id = self.image_builder.id_for_name(new_name)
+            id = image_id
+            
+            _ann = {
+                'segmentation': [[]],
+                'area': (a['height'] * a['width']),
+                'iscrowd': 0,
+                'image_id': image_id,
+                'bbox': [ list(map(int, bb)) for bb in a['bbox'] ],
+                'category_id': [self.categories_builder.get_category_id(c) for c in a['category']],
+                'id': id,
+                'ignore': 0 }
 
             all_annotations.append(_ann)
         self.all_annotations = all_annotations
-        return self.all_annotations
+        return self.all_annotations    
 
 
     def build_categories(self, annots):        
@@ -59,20 +59,19 @@ class OdPrep():
 
     def build_images(self, annots):
         all_images = []
-        for anno in annots:
-            for a in anno:
-                old_name = f'{a["folder"]}/{a["filename"]}'
-                new_name = self.image_builder.new_for_old(old_name)
-                image_id = self.image_builder.id_for_name(new_name)
+        for a in annots:            
+            old_name = f'{a["folder"]}/{a["filename"]}'
+            new_name = self.image_builder.new_for_old(old_name)
+            image_id = self.image_builder.id_for_name(new_name)
 
-                _image = {
-                   'file_name': new_name,
-                    'height': a['height'],
-                    'width': a['width'],
-                    'id': image_id
-                }
-                
-                if _image not in all_images: all_images.append(_image)                            
+            _image = {
+                'file_name': new_name,
+                'height': a['height'],
+                'width': a['width'],
+                'id': image_id
+            }
+            
+            if _image not in all_images: all_images.append(_image)                            
                     
         self.all_images = all_images
         return self.all_images
