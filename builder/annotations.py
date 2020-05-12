@@ -75,7 +75,14 @@ class AnnotationsBuilder():
         self.annot_folder = Path(annot_folder)
         self.annots = [self.annotator(xml_file) for folder in self.annot_folder.ls() for xml_file in folder.ls()]
         self.annots = flatten_list(self.annots)
+        self.create_ids()
+
         return self.annots    
+
+    def create_ids(self):
+        for i, o in enumerate(self.annots): 
+            id = i + 1
+            o['id'] = id
 
 
 __all__ = [Annotate, AnnotationsBuilder]

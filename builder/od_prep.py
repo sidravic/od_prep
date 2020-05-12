@@ -37,7 +37,7 @@ class OdPrep():
             old_name = f'{a["folder"]}/{a["filename"]}'
             new_name = self.image_builder.new_for_old(old_name)
             image_id = self.image_builder.id_for_name(new_name)
-            id = image_id
+            id = a['id']
             
             _ann = {
                 'segmentation': [[]],
