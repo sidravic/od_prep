@@ -1,5 +1,6 @@
 import xmltodict
 from fastai.basic_data import Path
+from .utils import flatten_list
 
 
 
@@ -28,18 +29,16 @@ class Annotate():
         
         height, width, area = self._get_hw_area(d['annotation']['size'])        
         filename = d['annotation']['filename']
-        path = d['annotation']['path']
-        category = []
-        bbox = []
-        annotated = None
+        path = d['annotation']['path']        
+        annotated = []
         
-        for o in annot_objects:                   
-            category.append(o['name'])
-            bbox.append(self._get_bbox(o['bndbox']))
-            
-        annotated = self._prepare_annotation(height, width, area, 
-                                 filename, path, self.xml_file, category, 
-                                 bbox)
+        for idx, o in enumerate(annot_objects):  
+            id = idx + 1                             
+            category = o['name']
+            bbox = self._get_bbox(o['bndbox'])            
+            annotated.append(self._prepare_annotation(height, width, area, 
+                                filename, path, self.xml_file, category, 
+                                bbox, id))
         return annotated
         
     def _get_hw_area(self, size):
@@ -48,9 +47,12 @@ class Annotate():
         area = height * width
         return [height, width, area]
 
-    def _get_bbox(self, bb): return [bb['xmin'], bb['ymin'], bb['xmax'], bb['ymax']]
+    def _get_bbox(self, bb): 
+        bb =  [bb['xmin'], bb['ymin'], bb['xmax'], bb['ymax']]
+        bb = list(map(int, bb))
+        return bb
 
-    def _prepare_annotation(self, height, width, area, filename, path, xml_file, category, bbox):
+    def _prepare_annotation(self, height, width, area, filename, path, xml_file, category, bbox, id):
         return {
             'height': height,
             'width': width,
@@ -58,7 +60,8 @@ class Annotate():
             'path': path,
             'folder': xml_file.parent.__str__().split('/')[-1],
             'category': category,
-            'bbox': bbox
+            'bbox': bbox,
+            'id': id
         }
 
 
@@ -71,6 +74,7 @@ class AnnotationsBuilder():
     def __call__(self, annot_folder):        
         self.annot_folder = Path(annot_folder)
         self.annots = [self.annotator(xml_file) for folder in self.annot_folder.ls() for xml_file in folder.ls()]
+        self.annots = flatten_list(self.annots)
         return self.annots    
 
 

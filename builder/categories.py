@@ -1,8 +1,8 @@
 import pdb
 import itertools
-from pandas.core.common import flatten
+from .utils import flatten_list
 
-def flatten_list(l): return list(flatten(l))
+
 
 class Categories():
     def __init__(self, annotated=None):
@@ -14,10 +14,12 @@ class Categories():
         return self.invoke()
 
     def invoke(self, invert=False):
+        cat = []
+        for a in self.annotated: cat.append(a['category'])
 
-        self.cat = [ a['category'] for a in self.annotated  ]
-        self.cat = set(flatten_list(self.cat))
-        self.cat = dict([(i+1, c) for i, c in enumerate(self.cat)])
+        cat = set(cat)
+        cat = dict([(i+1, c) for i, c in enumerate(cat)])
+        self.cat = cat
         return self.cat
 
     def categories(self, invert=False):

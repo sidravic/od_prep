@@ -7,6 +7,7 @@ class OdPrep():
     def __init__(self, annot_folder, images_folder, all_images_folder=None):
         self.annot_folder = Path(annot_folder)
         self.images_folder = Path(images_folder)
+        
         if all_images_folder: self.all_images_folder = Path(all_images_folder)
         else: self.all_images_folder = None
 
@@ -26,9 +27,9 @@ class OdPrep():
         self.build_annotations(self.annotator.annots)
         self.build_images(self.annotator.annots)
         self.build_categories(self.annotator.annots)
-        return self.all_data
+        return self
 
-
+    
     def build_annotations(self, annots):
         all_annotations = []
         for a in annots:
@@ -43,8 +44,8 @@ class OdPrep():
                 'area': (a['height'] * a['width']),
                 'iscrowd': 0,
                 'image_id': image_id,
-                'bbox': [ list(map(int, bb)) for bb in a['bbox'] ],
-                'category_id': [self.categories_builder.get_category_id(c) for c in a['category']],
+                'bbox': a['bbox'],
+                'category_id': self.categories_builder.get_category_id(a['category']),
                 'id': id,
                 'ignore': 0 }
 
